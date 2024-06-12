@@ -105,7 +105,9 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
         for item in indexPaths {
             if list.count - 3 == item.row {
                 page += 1
-                requestMovies(query: searchBar.text!)
+                if self.page <= self.endPage {
+                    requestMovies(query: searchBar.text!)
+                }
             }
         }
     }
@@ -139,9 +141,7 @@ extension ViewController: UISearchBarDelegate {
                         self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
                     }
                 } else {
-                    if self.page <= self.endPage {
-                        self.list.append(contentsOf: value.results)
-                    }
+                    self.list.append(contentsOf: value.results)
                     print("\(self.page)")
                 }
             case .failure(let error):
