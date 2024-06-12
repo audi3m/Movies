@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout())
     
     var page = 1
+    var endPage = 0
     var currentQuery = ""
     
     var list: [Movie] = [] {
@@ -70,6 +71,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.posterImageView.kf.setImage(with: url)
         } else {
             cell.posterImageView.image = UIImage(systemName: "movieclapper")
+            cell.posterImageView.tintColor = .white
             cell.posterImageView.contentMode = .scaleAspectFit
         }
         
@@ -108,7 +110,6 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
         }
     }
     
-    
 }
 
 // UISearchBar
@@ -123,7 +124,6 @@ extension ViewController: UISearchBarDelegate {
             view.endEditing(true)
         }
         
-        
     }
     
     func requestMovies(query: String) {
@@ -134,8 +134,15 @@ extension ViewController: UISearchBarDelegate {
                 print("SUCCESS")
                 if self.page == 1 {
                     self.list = value.results
+                    self.endPage = value.total_pages
+                    if !self.list.isEmpty {
+                        self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+                    }
                 } else {
-                    self.list.append(contentsOf: value.results)
+                    if self.page <= self.endPage {
+                        self.list.append(contentsOf: value.results)
+                    }
+                    print("\(self.page)")
                 }
             case .failure(let error):
                 print(error)
